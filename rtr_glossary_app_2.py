@@ -5,7 +5,7 @@ import csv
 import os
 
 st.set_page_config(
-    page_title="Race to Resilience Glossary",
+    page_title="RtR/RPI/SAA Glossary",
     layout="wide",
     initial_sidebar_state="expanded"
 )
@@ -21,11 +21,10 @@ if "last_feedback" not in st.session_state:
     st.session_state["last_feedback"] = ""
 
 # Title and introductory description.
-st.title("Race to Resilience Glossary")
+st.title("RtR/RPI/SAA Glossary")
 st.markdown("""
-Welcome to the Race to Resilience Glossary App – your comprehensive guide to the key concepts and definitions driving our campaign. 
+Welcome to the RtR/RPI/SAA Glossary App –  
 Use the sidebar to filter entries by **Source** via the dropdown menu, and use the keyword search dropdown below to quickly find specific definitions or titles. 
-Whether you're a climate action professional or simply curious about our work, this app is designed to help you navigate our initiatives.
 """)
 
 # Load glossary data.
@@ -68,64 +67,36 @@ if search_keyword != "None":
     ]
 
 st.subheader("Glossary Search Results")
-if not filtered_df.empty:
-    for _, row in filtered_df.iterrows():
-        st.markdown(
-            f"""
-            <div style="padding: 15px; background-color: #f9f9f9; border-left: 6px solid #FF37D5; margin-bottom: 15px;">
-                <div style="font-size: 20px; font-weight: bold; color: #333;">
-                    {row['Category']}
-                </div>
-                <div style="font-size: 20px; margin-top: 10px; color: #555;">
-                    {row['Definition']}
-                </div>
-                <div style="font-size: 14px; margin-top: 10px; color: #777;">
-                    <strong>Source:</strong> {row['Source']}
-                    {" | <a href='" + row['Link'] + "' target='_blank'>Learn more</a>" if row['Link'] else ""}
-                </div>
-            </div>
-            """, unsafe_allow_html=True)
+
+# If no filters are selected, show an info message and full table checkbox.
+if selected_source == "None" and search_keyword == "None":
+    st.info("No filters selected. Please choose a Source from the sidebar to see filtered results. Available sources: " + ", ".join(sources))
+    if st.checkbox("Show full data table", key="full_table_none"):
+        st.dataframe(df_glossary)
+# If filters are applied, show the card-style results and a checkbox for the dynamic table.
 else:
-    st.write("No results found. Try adjusting your filters or search keywords.")
-
-# # -------------------------------
-# # Sidebar: Expanded Feedback Section
-# # -------------------------------
-# st.sidebar.subheader("Feedback")
-
-# # Feedback inputs.
-# feedback_name = st.sidebar.text_input("Your Name:", key="feedback_name")
-# feedback_text = st.sidebar.text_area("Your feedback or suggestions:", key="feedback_text")
-
-# def submit_feedback():
-#     if not st.session_state.feedback_name.strip():
-#         st.session_state.feedback_error = "Please enter your name before submitting."
-#         return
-#     if not st.session_state.feedback_text.strip():
-#         st.session_state.feedback_error = "Please enter your feedback before submitting."
-#         return
-#     # Save the feedback to a CSV file.
-#     filename = "feedback.csv"
-#     timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-#     new_row = [timestamp, st.session_state.feedback_name, st.session_state.feedback_text]
-#     file_exists = os.path.isfile(filename)
-#     with open(filename, "a", newline="") as f:
-#         writer = csv.writer(f)
-#         if not file_exists:
-#             writer.writerow(["Timestamp", "Name", "Feedback"])
-#         writer.writerow(new_row)
-#     # Prepare a snippet from the feedback.
-#     snippet = st.session_state.feedback_text[:50] + ("..." if len(st.session_state.feedback_text) > 50 else "")
-#     st.session_state.last_feedback = f"Thank you, {st.session_state.feedback_name}! Your feedback: {snippet}"
-#     st.session_state.feedback_error = ""
-#     # Clear the feedback fields.
-#     st.session_state.feedback_name = ""
-#     st.session_state.feedback_text = ""
-#     # No need to call st.rerun(); Streamlit automatically re-runs the script after the callback.
-
-# st.sidebar.button("Submit Feedback", on_click=submit_feedback)
-
-# if st.session_state.feedback_error:
-#     st.sidebar.error(st.session_state.feedback_error)
-# elif st.session_state.last_feedback:
-#     st.sidebar.success(st.session_state.last_feedback)
+    if not filtered_df.empty:
+        for _, row in filtered_df.iterrows():
+            # Safely build the link string only if valid.
+            link_html = ""
+            if pd.notnull(row['Link']):
+                link_html = " | <a href='" + str(row['Link']) + "' target='_blank'>Learn more</a>"
+            st.markdown(
+                f"""
+                <div style="padding: 15px; background-color: #f9f9f9; border-left: 6px solid #FF37D5; margin-bottom: 15px;">
+                    <div style="font-size: 20px; font-weight: bold; color: #333;">
+                        {row['Category']}
+                    </div>
+                    <div style="font-size: 20px; margin-top: 10px; color: #555;">
+                        {row['Definition']}
+                    </div>
+                    <div style="font-size: 14px; margin-top: 10px; color: #777;">
+                        <strong>Source:</strong> {row['Source']}
+                        {link_html}
+                    </div>
+                </div>
+                """, unsafe_allow_html=True)
+        if st.checkbox("Show full data table", key="full_table_filtered"):
+            st.dataframe(filtered_df)
+    else:
+        st.write("No results found. Try adjusting your filters or search keywords.")
