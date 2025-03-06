@@ -88,44 +88,44 @@ if not filtered_df.empty:
 else:
     st.write("No results found. Try adjusting your filters or search keywords.")
 
-# -------------------------------
-# Sidebar: Expanded Feedback Section
-# -------------------------------
-st.sidebar.subheader("Feedback")
+# # -------------------------------
+# # Sidebar: Expanded Feedback Section
+# # -------------------------------
+# st.sidebar.subheader("Feedback")
 
-# Feedback inputs.
-feedback_name = st.sidebar.text_input("Your Name:", key="feedback_name")
-feedback_text = st.sidebar.text_area("Your feedback or suggestions:", key="feedback_text")
+# # Feedback inputs.
+# feedback_name = st.sidebar.text_input("Your Name:", key="feedback_name")
+# feedback_text = st.sidebar.text_area("Your feedback or suggestions:", key="feedback_text")
 
-def submit_feedback():
-    if not st.session_state.feedback_name.strip():
-        st.session_state.feedback_error = "Please enter your name before submitting."
-        return
-    if not st.session_state.feedback_text.strip():
-        st.session_state.feedback_error = "Please enter your feedback before submitting."
-        return
-    # Save the feedback to a CSV file.
-    filename = "feedback.csv"
-    timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    new_row = [timestamp, st.session_state.feedback_name, st.session_state.feedback_text]
-    file_exists = os.path.isfile(filename)
-    with open(filename, "a", newline="") as f:
-        writer = csv.writer(f)
-        if not file_exists:
-            writer.writerow(["Timestamp", "Name", "Feedback"])
-        writer.writerow(new_row)
-    # Prepare a snippet from the feedback.
-    snippet = st.session_state.feedback_text[:50] + ("..." if len(st.session_state.feedback_text) > 50 else "")
-    st.session_state.last_feedback = f"Thank you, {st.session_state.feedback_name}! Your feedback: {snippet}"
-    st.session_state.feedback_error = ""
-    # Clear the feedback fields.
-    st.session_state.feedback_name = ""
-    st.session_state.feedback_text = ""
-    # No need to call st.rerun(); Streamlit automatically re-runs the script after the callback.
+# def submit_feedback():
+#     if not st.session_state.feedback_name.strip():
+#         st.session_state.feedback_error = "Please enter your name before submitting."
+#         return
+#     if not st.session_state.feedback_text.strip():
+#         st.session_state.feedback_error = "Please enter your feedback before submitting."
+#         return
+#     # Save the feedback to a CSV file.
+#     filename = "feedback.csv"
+#     timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+#     new_row = [timestamp, st.session_state.feedback_name, st.session_state.feedback_text]
+#     file_exists = os.path.isfile(filename)
+#     with open(filename, "a", newline="") as f:
+#         writer = csv.writer(f)
+#         if not file_exists:
+#             writer.writerow(["Timestamp", "Name", "Feedback"])
+#         writer.writerow(new_row)
+#     # Prepare a snippet from the feedback.
+#     snippet = st.session_state.feedback_text[:50] + ("..." if len(st.session_state.feedback_text) > 50 else "")
+#     st.session_state.last_feedback = f"Thank you, {st.session_state.feedback_name}! Your feedback: {snippet}"
+#     st.session_state.feedback_error = ""
+#     # Clear the feedback fields.
+#     st.session_state.feedback_name = ""
+#     st.session_state.feedback_text = ""
+#     # No need to call st.rerun(); Streamlit automatically re-runs the script after the callback.
 
-st.sidebar.button("Submit Feedback", on_click=submit_feedback)
+# st.sidebar.button("Submit Feedback", on_click=submit_feedback)
 
-if st.session_state.feedback_error:
-    st.sidebar.error(st.session_state.feedback_error)
-elif st.session_state.last_feedback:
-    st.sidebar.success(st.session_state.last_feedback)
+# if st.session_state.feedback_error:
+#     st.sidebar.error(st.session_state.feedback_error)
+# elif st.session_state.last_feedback:
+#     st.sidebar.success(st.session_state.last_feedback)
